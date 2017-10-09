@@ -79,13 +79,3 @@ Tags
 
 - [installation] : Rabbitmq server or cluster installation
 - [testing] : Unit testing for a server
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-BSO ISL
