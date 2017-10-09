@@ -1,0 +1,125 @@
+---
+
+### Remove default guest user with cluster
+- name: Remove default guest user (with cluster)
+  rabbitmq_user:
+    name: guest
+    vhost: "/"
+    state: absent
+  when: rabbitmq_clustering == True and rabbitmq_firstnode == True
+
+### Remove default guest user without cluster
+- name: Remove default guest user (without cluster)
+  rabbitmq_user:
+    name: guest
+    vhost: "/"
+    state: absent
+  when: rabbitmq_clustering == False
+
+
+- name: Add vhost for application user (with cluster)
+  rabbitmq_vhost:
+    name: "{{ rabbitmq_app_vhost }}"
+    state: present
+  when: rabbitmq_clustering == True and rabbitmq_firstnode == True
+
+- name: Add vhost for application user (without cluster)
+  rabbitmq_vhost:
+    name: "{{ rabbitmq_app_vhost }}"
+    state: present
+  when: rabbitmq_clustering == False
+
+
+- name: Add admin user (with cluster)
+  rabbitmq_user:
+    name: admin
+    password: "{{ rabbitmq_admin_password }}"
+    tags: "administrator"
+    permissions:
+      - vhost: "/"
+        configure_priv: ".*"
+        read_priv: ".*"
+        write_priv: ".*"
+      - vhost: "{{ rabbitmq_app_vhost }}"
+        configure_priv: ".*"
+        read_priv: ".*"
+        write_priv: ".*"
+    state: present
+  when: rabbitmq_clustering == True and rabbitmq_firstnode == True
+
+- name: Add admin user (without cluster)
+  rabbitmq_user:
+    name: admin
+    password: "{{ rabbitmq_admin_password }}"
+    tags: "administrator"
+    permissions:
+      - vhost: "/"
+        configure_priv: ".*"
+        read_priv: ".*"
+        write_priv: ".*"
+      - vhost: "{{ rabbitmq_app_vhost }}"
+        configure_priv: ".*"
+        read_priv: ".*"
+        write_priv: ".*"
+    state: present
+  when: rabbitmq_clustering == False
+
+
+- name: Add application user (with cluster)
+  rabbitmq_user:
+    name: "{{ rabbitmq_app_username }}"
+    password: "{{ rabbitmq_app_password }}"
+    tags: "management"
+    permissions:
+      - vhost: "{{ rabbitmq_app_vhost }}"
+        configure_priv: ".*"
+        read_priv: ".*"
+        write_priv: ".*"
+    state: present
+  when: rabbitmq_clustering == True and rabbitmq_firstnode == True
+
+
+- name: Add application user (without cluster)
+  rabbitmq_user:
+    name: "{{ rabbitmq_app_username }}"
+    password: "{{ rabbitmq_app_password }}"
+    tags: "management"
+    permissions:
+      - vhost: "{{ rabbitmq_app_vhost }}"
+        configure_priv: ".*"
+        read_priv: ".*"
+        write_priv: ".*"
+    state: present
+  when: rabbitmq_clustering == False
+
+
+- name: Add monitoring user (with cluster)
+  rabbitmq_user:
+    name: "{{ rabbitmq_monitoring_username }}"
+    password: "{{ rabbitmq_monitoring_password }}"
+    tags: "monitoring"
+    state: present
+  when: rabbitmq_clustering == True and rabbitmq_firstnode == True
+
+
+- name: Add monitoring user (without cluster)
+  rabbitmq_user:
+    name: "{{ rabbitmq_monitoring_username }}"
+    password: "{{ rabbitmq_monitoring_password }}"
+    tags: "monitoring"
+    state: present
+  when: rabbitmq_clustering == False
+
+
+# - name: rabbitmq_users | creating rabbitmq users
+#   rabbitmq_user:
+#     name: "{{ item.name }}"
+#     password: "{{ item.password }}"
+#     vhost: "{{ item.vhost }}"
+#     configure_priv: "{{ item.configure_priv }}"
+#     read_priv: "{{ item.read_priv }}"
+#     write_priv: "{{ item.write_priv }}"
+#     tags: "{{ item.tags }}"
+#     state: present
+#   run_once: yes
+#   with_items: rabbitmq_users

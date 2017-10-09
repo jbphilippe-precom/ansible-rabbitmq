@@ -1,0 +1,39 @@
+---
+# tasks file for ansible-rabbitmq
+
+#
+# Non-defined mandatory variables
+#
+# - fail: msg="This play requires 'rabbitmq_admin_password' in secret.yml"
+#   when: rabbitmq_admin_password is not defined
+#   tags: [installation]
+
+# - fail: msg="This play requires 'rabbitmq_backup_password' in secret.yml"
+#   when: rabbitmq_backup_password is not defined
+#   tags: [installation]
+
+#
+# Non-defined mandatory variables for a cluster
+#
+# - fail: msg="This play requires 'rabbitmq_cluster_name'"
+#   when: rabbitmq_cluster_name is not defined and rabbitmq_cluster == 'true'
+#   tags: [installation]
+#
+# - fail: msg="This play requires 'rabbitmq_cluster_key' in secret.yml"
+#   when: rabbitmq_cluster_key is not defined and rabbitmq_cluster == 'true'
+#   tags: [installation]
+
+#
+# Tasks
+#
+- include: rabbitmq-install.yml
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'xenial'
+  tags: [installation]
+
+# - include: rabbitmq-rollback.yml
+#   when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'xenial'
+#   tags: [rollback]
+
+# - include: rabbitmq-testing.yml
+#   when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'xenial'
+#   tags: [testing]

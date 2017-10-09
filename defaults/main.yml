@@ -1,0 +1,35 @@
+---
+# defaults file for ansible-rabbitmq
+
+rabbitmq_port: 5672
+rabbitmq_bind_address: 127.0.0.1
+
+rabbitmq_use_lvm: "true"
+rabbitmq_vg_name: vg_vroot
+rabbitmq_lv_name: lv_rabbit
+rabbitmq_lv_size: 3g
+rabbitmq_fs_type: "xfs"
+
+rabbitmq_env_file: /etc/rabbitmq/rabbitmq-env.conf
+rabbitmq_conf_file: /etc/rabbitmq/rabbitmq.config
+rabbitmq_datadir: /var/lib/rabbitmq
+
+rabbitmq_use_fqdn: "true"
+
+rabbitmq_ssl: False
+rabbitmq_cluster: False
+
+# rabbitmq_plugins:
+  #- management
+
+#
+# rabbitmq_admin_password: "passwd"
+# rabbitmq_app_username: "appli"
+# rabbitmq_app_password: "passwd"
+#
+# rabbitmq_vhosts_list: "/application"
+#
+# rabbitmq_nodes_list:
+#   - "jphqueuefr01l.btsys.local"
+#   - "jphqueuefr02l.btsys.local"
+#   - "jphqueuefr03l.btsys.local"

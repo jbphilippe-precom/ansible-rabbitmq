@@ -1,0 +1,63 @@
+---
+
+# Use LVM ?
+- include: rabbitmq-lvm.yml
+  when: ansible_distribution == 'Ubuntu' and rabbitmq_use_lvm == 'true'
+
+- name: Copy Erlang shared cookie if cluster is True
+  template:
+    src: erlang.cookie.j2
+    dest: "{{ rabbitmq_datadir }}/.erlang.cookie"
+    mode: 0400
+    owner: root
+    group: root
+  when: rabbitmq_clustering == True
+
+- name: Install rabbitmq-server
+  apt:
+    name: rabbitmq-server
+    update_cache: yes
+    state: present
+
+- name: Set rabbitmq user for all files in {{ rabbitmq_datadir }}
+  file:
+    path: "{{ rabbitmq_datadir }}"
+    state: directory
+    recurse: yes
+    owner: rabbitmq
+    group: rabbitmq
+
+- name: Copy rabbitmq environment
+  template:
+    src: rabbitmq-env.j2
+    dest: "{{ rabbitmq_env_file }}"
+    owner: root
+    group: root
+    mode: 0644
+  register: rabbitmq_env
+
+- name: Copy rabbitmq configuration
+  template:
+    src: rabbitmq.config.j2
+    dest: "{{ rabbitmq_conf_file }}"
+    owner: root
+    group: root
+    mode: 0644
+  register: rabbitmq_config
+
+- name: Restart rabbitmq-server
+  service:
+    name: rabbitmq-server
+    state: restarted
+  when: rabbitmq_env|changed or rabbitmq_config|changed
+
+### Create rabbitmq users
+- include: rabbitmq-users.yml
+
+### Create rabbitmq queues, exchanges, bindings...
+- include: rabbitmq-resources.yml
+
+- name: Wait for rabbitmq
+  wait_for:
+    host: "{{ rabbitmq_bind_address }}"
+    port: "{{ rabbitmq_port }}"

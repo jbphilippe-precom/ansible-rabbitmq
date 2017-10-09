@@ -1,0 +1,28 @@
+---
+# rabbitmq
+- name: Create rabbitmq LV
+  lvol:
+    vg: "{{ rabbitmq_vg_name }}"
+    lv: "{{ rabbitmq_lv_name }}"
+    size: "{{ rabbitmq_lv_size }}"
+
+- name: Install XFS utils
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    state: latest
+  with_items:
+    - xfsprogs
+
+- name: Create "{{ rabbitmq_fs_type }}" filesystem for rabbitmq
+  filesystem:
+    fstype: "{{ rabbitmq_fs_type }}"
+    dev: /dev/{{ rabbitmq_vg_name }}/{{ rabbitmq_lv_name }}
+
+- name: Create mounpoint
+  mount:
+    name: "{{ rabbitmq_datadir }}"
+    src: /dev/mapper/{{ rabbitmq_vg_name }}-{{ rabbitmq_lv_name }}
+    fstype: xfs
+    opts: defaults,noatime,noexec
+    state: mounted
